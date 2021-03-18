@@ -1,4 +1,4 @@
-# ReconScript
+## 👑 My Recon 👑
 
 ## Scripts that need to be installed
 
