@@ -37,82 +37,135 @@ f_HVRL=$4
 f_SIGN=/usr/share/icons/Windows-10-Icons/256x256/status
 i=1
 
-sub_EnumOutput(){
-        echo "[+] Starting Domain Enumaration"
-        echo "Domain : "$(wc $f_PATH/final_recon.txt)
-        echo "[-] Subfinder"
-        echo "[-] Findomain"
-        echo "[-] Assetfinder"
-        echo "[-] Amass"
-        echo 
-}
 
-sub_Enum(){
 
-    if [ ! -f $f_PATH/final_recon.txt ]; then
-        sub_EnumOutput             
-        
-        subfinder -dL $f_URLS -silent -o $f_PATH/enum_sub
-        screen -dm bash -c "assetfinder -subs-only $f_ASST | tee $f_PATH/enum_asset"
-        findomain -f $f_PATH/enum_sub -q -u $f_PATH/enum_find | sort -u | tee $f_PATH/enum_find
-        
-        #cat $f_PATH/enum_find | sort -u | tee $f_PATH/enum_find
-        amass enum -passive -df $f_PATH/enum_find -o $f_PATH/enum_amass
-        
-        cat $f_PATH/enum_* | sort -u | tee $f_PATH/final_recon.txt
-
-        rm $f_PATH/enum_*
-        echo "[+] Domain Enumaration Done"
-        echo "-----------"
-    else
-        sub_EnumOutput
-        echo "[+] Domain Enumaration Done"
-        echo "-----------"
-    fi
-
-}
-
-sub_Deep_Enum(){
+sub_DEEP_ENUM(){
     amass enum -src -ip -active -brute -d $f_ASST -o domain 
 }
 
-sub_Crwl(){
-    echo "[+] Starting Crawling"   
-    echo "Crawled : "$(wc $f_PATH/final_recon.txt)
-    echo "[-] Starting Hakrawler "
-    echo "[-] Starting WaybackUrls "
-    echo     
-    
-    if [[ -f $f_PATH/crwl_* ]]; then
-        echo "    -  Removing this file : " $(ls $f_PATH | grep crwl_*)
-        rm $f_PATH/crwl_* 
-    fi   
 
-    sleep 0.1
-    screen -S Crawl_Hakrawler -dm bash -c "cat $f_PATH/final_recon.txt | hakrawler -plain | tee $f_PATH/crwl_hakrawler ; notify-send -u critical 'CRAWL HAKRAWLER SCAN DONE' -i $f_SIGN/messagebox_info.png"
-    screen -S Crawl_WaybackUrl -dm bash -c "cat $f_PATH/final_recon.txt | waybackurls | tee $f_PATH/crwl_waybackurls ; notify-send -u critical 'CRAWL WAYBACKURL SCAN DONE' -i $f_SIGN/messagebox_info.png"
-    
-    #sleep 0.5
-    #screen -dmS Crwling zsh && sleep 1 && screen -S Crwling -p 0 -X stuff 'var=1 ; while [ \$var != 0 ] ; do var=\$(screen -list | grep -ic Crawl) ; echo "Crawling Still Running : " \$var ; sleep 0.1 ; done \n'"cat $f_PATH/crwl_* | sort -u | tee $f_PATH/final_crawl.txt \nrm $f_PATH/crwl_*\nif [ -f $f_PATH/final_crawl.txt ]; then notify-send -u critical 'ALL CRAWL SCAN DONE' -i $f_SIGN/messagebox_info.png; fi\nexit\n" 
-    #&& screen -r Crwling
-    
-    sleep 0.1
-    while [ $(screen -list | grep -ic Crawl) != 0 ]; do
-        echo -ne "    - Waiting for crawling : Seconds $i"\\r
-        let "i+=1"
-        sleep 1
-    done
-    cat $f_PATH/crwl_* | sort -u | tee $f_PATH/final_crawl.txt
-    rm $f_PATH/crwl_* 
-    while [ ! -f $f_PATH/final_crawl.txt ]; do
-        notify-send -u critical "    - File Not Exist Check Directory :"  $f_PATH"final_crawl.txt " -i $f_SIGN/messagebox_warning.png
-        echo "    - Can't Procceed Next Step !!! File Not Exist Check Directory :"  $f_PATH"final_crawl.txt "
-        sleep 5
-    done
 
-    echo "[+] Domain Crawling Done"
-    echo "-----------"
+if [ ! -d "$f_PATH" ];      then mkdir -p $f_PATH ;      fi
+if [ ! -d "$f_PATH/stko" ]; then mkdir -p $f_PATH/stko ; fi
+
+
+sub_ENUM(){
+    if [ $(ls | grep -ic enum_) != 0  ]; then 
+        echo "      -  Removing this file : " $(ls | grep enum_)
+        rm -rf $f_PATH/enum_*
+    fi
+
+    if [ ! -f $f_PATH/final_recon.txt ]; then
+        echo "[+] Starting domain enumaration"
+        echo "[-] subfinder [-] findomain [-] assetfinder [-] amass"
+        echo 
+        subfinder -dL $f_URLS -silent -o $f_PATH/enum_sub
+        screen -dm bash -c "assetfinder -subs-only $f_ASST | tee $f_PATH/enum_asset"
+        findomain -f $f_PATH/enum_sub -q -u $f_PATH/enum_find | sort -u | tee $f_PATH/enum_find
+        amass enum -passive -df $f_PATH/enum_find -o $f_PATH/enum_amass
+        cat $f_PATH/enum_* | sort -u | tee $f_PATH/final_recon.txt
+        echo "Domain : "$(wc $f_path/final_recon.txt)
+        echo "[+] Domain Enumaration Done"
+        echo "-----------"
+    else
+        echo "[+] Starting domain enumaration"
+        echo "[-] subfinder [-] findomain [-] assetfinder [-] amass"
+        echo
+        echo "File Exist ! "
+        echo "Domain : "$(wc $f_path/final_recon.txt)
+        echo "-----------"
+    fi
+
+    rm -rf $f_PATH/enum_*
 }
+
+
+
+
+
+sub_HTTP(){
+    if [ $(ls | grep -ic http_) != 0  ]; then 
+        echo "      -  Removing this file : " $(ls | grep http_)
+        rm -rf $f_PATH/http_*
+    fi
+
+    if [ ! -f $f_PATH/final_http.txt ]; then
+        echo "[+] Starting Http "
+        echo "[-] Httpx [-] Httprobe"
+        echo
+        httpx -l $f_PATH/final_recon.txt -o $f_PATH/http_httpx.txt
+        cat $f_PATH/final_recon.txt | httprobe -c 200 | tee http_httprobe.txt
+        cat http_* | sort -u | tee final_http.txt
+        echo "Http : "$(wc $f_path/final_http.txt)
+        echo "[+] Http Done"
+        echo "-----------"
+    else 
+        echo "[+] Starting Http "
+        echo "[-] Httpx [-] Httprobe"
+        echo 
+        echo "File Exist ! "
+        echo "Http : "$(wc $f_path/final_http.txt)
+        echo "-----------"
+    fi 
+
+    rm -rf $f_PATH/http_*
+}
+
+
+
+
+sub_STKO(){
+    #dig - host
+    subzy -targets --hide_fails $f_PATH/final_recon.txt | tee $f_PATH/stko/stko_subzy.txt
+    subdover --list $f_PATH/final_recon.txt -t 100 -o $f_PATH/stko/stko_subdover.txt 
+    subjack -w $f_PATH/final_recon.txt -t 100 -o $f_PATH/stko/stko_subjack.txt
+    cat $f_PATH/final_recon.txt | aquatone -chrome-path ~/files/github/chromium-latest-linux/864970/chrome-linux/chrome -out aquatone
+}
+
+
+
+
+
+sub_CRWL(){
+    if [ $(ls | grep -ic crwl_) != 0  ]; then 
+        echo "    -  Removing this file : " $(ls | grep crwl_)
+        rm -rf $f_PATH/crwl_*
+    fi
+    
+    if [ ! -f $f_PATH/final_crawl.txt ]; then   
+        echo "[+] Starting Crawling"   
+        echo "[-] Hakrawler [-] WaybackUrls "
+        echo
+        screen -S Crawl_Hakrawler -dm bash -c "cat $f_PATH/final_recon.txt | hakrawler -plain | tee $f_PATH/crwl_hakrawler ; notify-send -u critical 'CRAWL HAKRAWLER SCAN DONE' -i $f_SIGN/messagebox_info.png"
+        sleep 0.5
+        screen -S Crawl_WaybackUrl -dm bash -c "cat $f_PATH/final_recon.txt | waybackurls | tee $f_PATH/crwl_waybackurls ; notify-send -u critical 'CRAWL WAYBACKURL SCAN DONE' -i $f_SIGN/messagebox_info.png"
+        sleep 0.5
+        while [ $(screen -list | grep -ic Crawl_) != 0 ]; do
+            echo -ne "      - Waiting for crawling : Seconds $i"\\r
+            let "i+=1"
+            sleep 1
+        done
+        cat $f_PATH/crwl_* | sort -u | tee $f_PATH/final_crawl.txt
+        echo "Crawling : "$(wc $f_path/final_crawl.txt)
+        echo "[+] Crawling Done"
+        echo "-----------"
+    else 
+        echo "[+] Starting Crawling"   
+        echo "[-] Hakrawler [-] WaybackUrls "
+        echo
+        echo "File Exist ! "
+        echo "Crawling : "$(wc $f_path/final_crawl.txt)
+        echo "-----------"
+    fi
+
+    rm -rf $f_PATH/crwl_*
+}
+
+
+
+
+
+
 
 sub_Wprs(){
     
@@ -140,9 +193,13 @@ sub_asn(){
     screen -S ASN -dm bash -c "echo $c_NAME | metabigor net --org -v | awk '{print $3}' | sed 's/[[0-9]]\+\.//g' | xargs -I@ prips @ | hakrevdns | anew $f_PATH/asn.txt"
 }
 
+
 main(){
-    #sub_Enum
-    #sub_Crwl
+    #sub_DEEP_ENUM
+    #sub_ENUM
+    #sub_HTTP
+    #sub_STKO
+    #sub_CRWL
     sub_Wprs
     #sub_xss
     #sub_nuclei
@@ -155,3 +212,6 @@ main(){
 # -i $f_SIGN/messagebox_warning.png
 # -i $f_SIGN/messagebox_info.png
 main 
+
+
+# if ! command -v subdover &> /dev/null ;then echo "COMMAND could not be found" ;  else echo "sad" ; fi
