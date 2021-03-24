@@ -21,6 +21,7 @@ To run the project, you will need to install the following programs:
 ## Usage : 
 Examples :
 ```bash
+$ cd
 $ mkdir -p ~/files/github/
 $ cd ~/files/github/
 $ git clone https://github.com/PushpenderIndia/subdover
