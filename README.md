@@ -18,7 +18,7 @@ To run the project, you will need to install the following programs:
 - [httprobe](https://github.com/tomnomnom/httprobe)
 - [httpx](https://github.com/projectdiscovery/httpx)
 
-### Usage : 
+## Usage : 
 Examples :
 ```bash
 $ mkdir -p ~/files/github/
@@ -37,13 +37,13 @@ $ cd ReconScript
 $ mv LazyRecon.sh ~/.local/bin
 ```
 
-### Export bashrc/zshrc 
+## Export bashrc/zshrc 
 ```bash
 export PATH=$PATH:~/.local/bin:
 ```
 
 
+## Donations
 ### My hope this little project helps you . 
-### Donations
 
 [![paypal](https://github.com/Ximi1970/Donate/blob/master/paypal_btn_donateCC_LG_1.gif)](https://paypal.me/joemarie425)
