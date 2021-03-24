@@ -1,27 +1,27 @@
 #!/bin/bash
 
+#
+# Create by Joe Marie Pines on 03/18/21
+#
 
-error=NULL
 
-
-display_hela(){
+display_help(){
     echo 
-    echo "Usage : [FILE] [PATH] [ASSETFINDER SPECIFIC URL] optional [URL FOR HARVESTER]"
-    echo 
+    echo "Usage : [FILE] [OUTPUT] [URL FOR: ASSETFINDER/HARVESTER]"
+    echo "        @Example LazyRecon.sh host.txt hackerone hackerone.com"
     echo "        First list of Urls"
-    echo "        Second path to save file"
-    echo "        Third Specified url for assetfinder doesn't accept contain host file'"
-    echo "        Fourth Url for theHarvester"
+    echo "        Output Directory"
+    echo "        Third Specified url for theHarvester/assetfinder'"
     echo 
 }
 
 
-
 if [ "$1" == "-h" ]; then display_help ; exit 0 ; fi
 if [ $# -lt 3     ]; then display_help ; exit 2 ; fi
-if [ ! -f $1      ]; then echo ; echo "File Not Exist : " $1 ; exit 2 ; fi
+if [ ! -f $1      ]; then echo ; echo "File Not Exist : " $1 ; display_help ; exit 2 ; fi
 
 
+error=NULL
 echo "Checking Command If Exist !"
 for p in subfinder assetfinder findomain amass httprobe httpx subzy subjack aquatone hakrawler waybackurls wpscan theHarvester ; do
     hash "$p" &>/dev/null && echo "[✅] Installed - $p" || echo "[❌] Installed - $p" $error=Err
@@ -34,6 +34,11 @@ f_URLL=$3
 f_DATE=$(date "+%F")
 f_PATH=$f_NAME/$f_DATE
 f_SIGN=/usr/share/icons/Windows-10-Icons/256x256/status
+
+# NAMING FILE VARIABLE 
+FILE_HTTP=final_http.txt
+FILE_RECON=final_recon.txt
+FILE_HTTPRESPONSE=final_httpResponse.txt
 
 
 if [ "$error" != "Err"       ]; then echo "Everything Installed " ; else echo "Missing Install" ; exit 1 ; fi
@@ -54,7 +59,7 @@ sub_ENUM(){
         rm -rf $f_PATH/enum_*
     fi
 
-    if [ ! -f $f_PATH/final_recon.txt ]; then
+    if [ ! -f $f_PATH/$FILE_RECON ]; then
         echo "[+] Starting domain enumaration"
         echo "[-] subfinder [-] findomain [-] assetfinder [-] amass"
         echo 
@@ -62,8 +67,8 @@ sub_ENUM(){
         screen -dm zsh -c "assetfinder -subs-only $f_URLL | tee $f_PATH/enum_asset"
         findomain -f $f_PATH/enum_sub -q -u $f_PATH/enum_find
         amass enum -passive -df $f_PATH/enum_find -o $f_PATH/enum_amass
-        cat $f_PATH/enum_* | sort -u | tee $f_PATH/final_recon.txt
-        echo "Domain : "$(wc $f_PATH/final_recon.txt)
+        cat $f_PATH/enum_* | sort -u | tee $f_PATH/$FILE_RECON
+        echo "Domain : "$(wc $f_PATH/$FILE_RECON)
         echo "[+] Domain Enumaration Done"
         echo "-----------"
     else
@@ -71,12 +76,12 @@ sub_ENUM(){
         echo "[-] subfinder [-] findomain [-] assetfinder [-] amass"
         echo
         echo "File Exist ! "
-        echo "Domain : "$(wc $f_PATH/final_recon.txt)
+        echo "Domain : "$(wc $f_PATH/$FILE_RECON)
         echo "-----------"
     fi
 
     rm -rf $f_PATH/enum_*
-    cat $f_PATH/final_recon.txt | httpx -title -content-length -status-code -silent >> $f_PATH/final_httpResponse
+    cat $f_PATH/$FILE_RECON | httpx -title -content-length -status-code -silent >> $f_PATH/$FILE_HTTPRESPONSE
     notify-send -u CRITICAL -i messagebox_info "ENUM"
 }
 
@@ -87,14 +92,14 @@ sub_HTTP(){
         rm -rf $f_PATH/http_*
     fi
 
-    if [ ! -f $f_PATH/final_http.txt ]; then
+    if [ ! -f $f_PATH/$FILE_HTTP ]; then
         echo "[+] Starting Http "
         echo "[-] Httpx [-] Httprobe"
         echo
-        httpx -l $f_PATH/final_recon.txt -o $f_PATH/http_httpx
-        cat $f_PATH/final_recon.txt | httprobe -c 200 | tee $f_PATH/http_httprobe
-        cat $f_PATH/http_* | sort -u | tee $f_PATH/final_http.txt
-        echo "Http : "$(wc $f_PATH/final_http.txt)
+        httpx -l $f_PATH/$FILE_RECON -o $f_PATH/http_httpx
+        cat $f_PATH/$FILE_RECON | httprobe -c 200 | tee $f_PATH/http_httprobe
+        cat $f_PATH/http_* | sort -u | tee $f_PATH/$FILE_HTTP
+        echo "Http : "$(wc $f_PATH/$FILE_HTTP)
         echo "[+] Http Done"
         echo "-----------"
     else 
@@ -102,11 +107,12 @@ sub_HTTP(){
         echo "[-] Httpx [-] Httprobe"
         echo 
         echo "File Exist ! "
-        echo "Http : "$(wc $f_PATH/final_http.txt)
+        echo "Http : "$(wc $f_PATH/$FILE_HTTP)
         echo "-----------"
     fi 
 
     rm -rf $f_PATH/http_*
+    rm -rf $f_PATH/$FILE_RECON_httpx.txt
     notify-send -u CRITICAL -i messagebox_info "HTTP"
 }
 
@@ -120,11 +126,10 @@ sub_STKO(){
     echo "[+] Starting Subdomain Takeover"
     echo "[-] subzy [-] subdover [-] subjack [-] aquatone"
     echo
-    subzy -targets $f_PATH/final_recon.txt | tee     $f_PATH/stko/stko_subzy
-    python3 ~/files/github/subdover/subdover.py -l   $f_PATH/final_recon.txt -t 100 -o $f_PATH/stko/stko_subdover
-    subjack -v -w  $f_PATH/final_recon.txt -t 100 -o $f_PATH/stko/stko_subjack
-    cat            $f_PATH/final_recon.txt | aquatone -ports xlarge -chrome-path ~/files/github/chromium-latest-linux/864970/chrome-linux/chrome -out $f_PATH/stko/stko_aquatone
-    screen -dm zsh -c "eyewitness --web -f $f_URLS -d $f_PATH/$f_PATH/eyewitnesses --timeout 15 --no-prompt\n"
+    subzy -targets $f_PATH/$FILE_RECON | tee      $f_PATH/stko/stko_subzy
+    python3 ~/files/github/subdover/subdover.py -l    $f_PATH/$FILE_RECON -t 100 -o $f_PATH/stko/stko_subdover
+    subjack -v -w  $f_PATH/$FILE_RECON -t 100 -o  $f_PATH/stko/stko_subjack
+    cat            $f_PATH/$FILE_RECON | aquatone -ports xlarge -chrome-path ~/files/github/chromium-latest-linux/864970/chrome-linux/chrome -out $f_PATH/stko/stko_aquatone
     echo "[+] Subdomain Takeover Done"
     echo "-----------"
     notify-send -u CRITICAL -i messagebox_info "STKO"
@@ -141,16 +146,20 @@ sub_CRWL(){
         echo "[+] Starting Crawling"   
         echo "[-] hakrawler [-] waybackurls "
         echo
-        screen -S Crawl_Hakrawler  -dm zsh -c "cat $f_PATH/final_recon.txt | hakrawler -plain | tee $f_PATH/crwl_hakrawler   ; notify-send -u critical 'CRAWL HAKRAWLER SCAN DONE'"
+        screen -S Crawl_Hakrawler  -dm zsh -c "cat $f_PATH/$FILE_RECON | hakrawler -plain | tee $f_PATH/crwl_hakrawler   ; notify-send -u critical 'CRAWL HAKRAWLER SCAN DONE'"
         sleep 0.5
-        screen -S Crawl_WaybackUrl -dm zsh -c "cat $f_PATH/final_recon.txt | waybackurls | tee      $f_PATH/crwl_waybackurls ; notify-send -u critical 'CRAWL WAYBACKURL SCAN DONE'"
+        screen -S Crawl_WaybackUrl -dm zsh -c "cat $f_PATH/$FILE_RECON | waybackurls      | tee $f_PATH/crwl_waybackurls ; notify-send -u critical 'CRAWL WAYBACKURL SCAN DONE'"
         sleep 0.5
+        screen -S Crawl_Gau        -dm zsh -c "cat $f_PATH/$FILE_RECON | gau              | tee $f_PATH/crwl_gau         ; notify-send -u critical 'CRAWL GAU SCAN DONE'"
+        sleep 0.5
+ 
         i=1
         while [ $(screen -list | grep -ic Crawl_) != 0 ]; do
             echo -ne "      - Waiting for crawling : Seconds $i"\\r
             let "i+=1"
             sleep 1
         done
+        cat $f_PATH/crwl_* | sort -u | tee $f_PATH/final_crawl.txt
         echo "Crawling : "$(wc $f_PATH/final_crawl.txt)
         echo "[+] Crawling Done"
         echo "-----------"
@@ -163,8 +172,6 @@ sub_CRWL(){
         echo "-----------"
     fi
     
-    cat $f_PATH/crwl_* | sort -u | tee $f_PATH/final_crawl.txt
-    screen -dm zsh -c "eyewitness --web -f $f_PATH/final_crawl.txt -d $f_PATH/webshot_crawling/eyewitnesses --timeout 15 --no-prompt\n"
     rm -rf $f_PATH/crwl_*
     notify-send -u CRITICAL -i messagebox_info "CRWL"
 }
@@ -174,8 +181,8 @@ sub_WPRS(){
     echo "[+] Starting Wordpress Exploiting"
     echo "[-] Wpscan [-] Zoom"
     echo
-    screen -dm zsh -c "cat $f_PATH/final_http.txt | xargs -I@ wpscan --url @ --enumerate vp --api-token $wpscan_api_token >> $f_PATH/wprs/wpscan;exit\n"
-    screen -dm zsh -c "cat $f_PATH/final_http.txt | xargs -I@ python ~/files/github/Zoom/zoom.py -u @ | tee                  $f_PATH/wprs/stko_zoom;exit\n"
+    screen -dm zsh -c "cat $f_PATH/$FILE_HTTP | xargs -I@ wpscan --url @ --enumerate vp --api-token $wpscan_api_token >> $f_PATH/wprs/wpscan;exit\n"
+    screen -dm zsh -c "cat $f_PATH/$FILE_HTTP | xargs -I@ python ~/files/github/Zoom/zoom.py -u @ | tee                  $f_PATH/wprs/stko_zoom;exit\n"
     echo "[+] Wpscan Done"
     echo "-----------"
 }
@@ -207,7 +214,6 @@ sub_NUCL(){
 
 
 sub_AASN(){
-    #Lazy subdomain enumaration 
     screen -S ASN -dm zsh -c "echo $f_NAME | metabigor net --org -v | awk '{print $3}' | sed 's/[[0-9]]\+\.//g' | xargs -I@ prips @ | hakrevdns | anew $f_PATH/asn.txt"
 }
 
@@ -225,8 +231,4 @@ main(){
     #sub_AASN
 }
 
-
 main 
-
-# -i $f_SIGN/messagebox_warning.png # -i $f_SIGN/messagebox_info.png
-# if ! command -v subdover &> /dev/null ;then echo "COMMAND could not be found" ;  else echo "sad" ; fi
