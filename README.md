@@ -1,6 +1,7 @@
 ## 👑 My Recon 👑
 
 ## Scripts that need to be installed
+To run the project, you will need to install the following programs:
 
 - [Findomain](https://github.com/Edu4rdSHL/findomain)
 - [Amass](https://github.com/OWASP/Amass)
