@@ -46,4 +46,4 @@ export PATH=$PATH:~/.local/bin:
 ### My hope this little project helps you . 
 ### Donations
 
-[![paypal](https://github.com/Ximi1970/Donate/blob/master/paypal_btn_donateCC_LG_1.gif)](https://paypal.me/joemarie425
+[![paypal](https://github.com/Ximi1970/Donate/blob/master/paypal_btn_donateCC_LG_1.gif)](https://paypal.me/joemarie425)
