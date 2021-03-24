@@ -1,6 +1,6 @@
 ## 👑 My Recon 👑
 
-## Scripts that need to be installed
+## Following Scripts that need to be Installed
 To run the project, you will need to install the following programs:
 
 - [Findomain](https://github.com/Edu4rdSHL/findomain)
