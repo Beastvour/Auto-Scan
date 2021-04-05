@@ -31,8 +31,12 @@ main(){
     echo  
     echo
 
-    subzy -targets $URLS -timeout 30 | tee STKO/STKO_subzy 
+    subzy -targets $URLS -timeout 30 | tee STKO/STKO_subzy
+    #subjack -v -w $URLS -t 30 -t 20 -o STKO/STKO_subjack
+    #$pyasubdover -l $URLS -t 20 -o STKO/STKO_subdover
+    cat $URLS | aquatone -http-timeout 20000 -scan-timeout 20000 -ports xlarge -chrome-path $CHROME -out STKO/STKO_aquatone
     $NTHIM -f $URLS --threads 50 >> STKO/STKO_NtHiM
+
 
     echo
     echo
