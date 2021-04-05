@@ -18,31 +18,6 @@ To run the project, you will need to install the following programs:
 - [httprobe](https://github.com/tomnomnom/httprobe)
 - [httpx](https://github.com/projectdiscovery/httpx)
 
-## Usage : 
-Examples :
-```bash
-$ cd
-$ mkdir -p ~/files/github/
-$ cd ~/files/github/
-$ git clone https://github.com/PushpenderIndia/subdover
-$ cd subdover 
-$ pip3 install -r requirements.txt
-$ cd ~/file/github
-$ git clone https://github.com/scheib/chromium-latest-linux.git
-$ cd chromium-latest-linux 
-$ chomod +x update.sh 
-$ ./update.sh
-$ cd ~/Downloads
-$ git clone https://github.com/Beastvour/ReconScript.git
-$ cd ReconScript
-$ mv LazyRecon.sh ~/.local/bin
-```
-
-## Export bashrc/zshrc 
-```bash
-export PATH=$PATH:~/.local/bin:
-```
-
 
 ## Donations
 ### My hope this little project helps you . 
