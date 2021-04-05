@@ -1,0 +1,23 @@
+#!/bin/bash
+
+
+help(){
+    echo "GITHUB DOKING FOR KEYS"
+    echo "cd inside folder to look for .git/objects/pack/"
+}
+
+if [ "$1" == "-h" ]; then help ; exit 0 ; fi
+if [ ! -d ".git/objects/pack/" ]; then help ; fi
+
+
+{ 
+	find .git/objects/pack/ -name "*.idx" |
+	while read i; do 
+		git show-index < "$i" | awk '{print $2}';
+	done;
+
+	find .git/objects/ -type f | grep  -v '/pack/' | 
+	awk -F'/' '{print $(NF-1)$NF}'; 
+} | while read o; do 
+		git cat-file -p $o;
+done

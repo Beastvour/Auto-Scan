@@ -8,7 +8,7 @@
 help(){
 
     echo 
-    echo "Usage of ENUM "
+    echo "Usage of XXSS "
     echo
     echo "-" 
     echo "Examples : 5XXSS.sh COMBINED_CRAWL  "
@@ -33,6 +33,8 @@ main(){
 
     cat $URLS | sort -u | grep "=" | kxss | sed 's/URL: //' | tee XSS_FUZZ
     cat XSS_FUZZ | sed 's/=.*/=/' | sort -u | dalfox pipe --custom-payload /home/kali/files/myBruteWords/xss-payload.txt --timeout 20 -o XSS_DALFOX_POC
+
+
 
     echo
     echo

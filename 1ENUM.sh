@@ -15,20 +15,18 @@ help(){
 }
 
 if [ "$1" == "-h" ]; then help ; exit 0 ; fi
-if [ -z "$2" ]; then help ; exit 0 ; fi
+# if [ -z "$2" ]; then help ; exit 0 ; fi
 if [ ! -f "$1" ]; then help ; echo ; echo "File Not Found !" ;  exit 2 ; fi 
 
 for p in subfinder assetfinder findomain amass ; do
     hash "$p" &>/dev/null && echo "[✅] Installed - $p" || echo "[❌] Installed - $p";
 done
 
-URL=$1
-OUTPUT=$2
-FILENAME=ENUM
+URL=$1  
 DATE=$(date "+%F") 
-DIRECTORY_FILENAME=$OUTPUT/$DATE
+DIRECTORY_FILENAME=F-$URL/$DATE
 
-if [ ! -d "$OUTPUT/$DATE" ]; then mkdir -p $OUTPUT/$DATE ; fi
+if [ ! -d "$DIRECTORY_FILENAME" ]; then mkdir -p $DIRECTORY_FILENAME ; fi
 
 main(){
     echo "-----------------------------------------------------"
@@ -38,26 +36,26 @@ main(){
     echo
     echo  
 
-    screen -AmdS ENUM_SUBFINDER bash
-    screen -AmdS ENUM_ASSETFINDER bash 
-    screen -AmdS ENUM_FINDOMAIN bash 
-    screen -AmdS ENUM_AMASS bash
+    screen -AmdS $URL-ENUM_SUBFINDER   bash
+    screen -AmdS $URL-ENUM_ASSETFINDER bash 
+    screen -AmdS $URL-ENUM_FINDOMAIN   bash 
+    screen -AmdS $URL-ENUM_AMASS       bash
     sleep 1
 
-    screen -S ENUM_SUBFINDER -p 0 -X stuff $'subfinder -dL '"$URL"' -silent -o '"$DIRECTORY_FILENAME/ENUM_SUBFINDER"'; exit \r'
-    # screen -r ENUM_SUBFINDER
+    screen -S $URL-ENUM_SUBFINDER -p 0 -X stuff $'subfinder -dL '"$URL"' -silent -o '"$DIRECTORY_FILENAME/ENUM_SUBFINDER"'; exit \r'
+    # screen -r $URL-ENUM_SUBFINDER
 
-    screen -S ENUM_ASSETFINDER -p 0 -X stuff $'cat '"$URL"' | assetfinder -subs-only | tee '"$DIRECTORY_FILENAME/ENUM_ASSETFINDER"'; exit \r'
-    # screen -r ENUM_ASSETFINDER
+    screen -S $URL-ENUM_ASSETFINDER -p 0 -X stuff $'cat '"$URL"' | assetfinder -subs-only | tee '"$DIRECTORY_FILENAME/ENUM_ASSETFINDER"'; exit \r'
+    # screen -r $URL-ENUM_ASSETFINDER
 
-    screen -S ENUM_FINDOMAIN -p 0 -X stuff $'findomain -f '"$URL"' -q -u '"$DIRECTORY_FILENAME/ENUM_FINDOMAIN"'; exit \r'
-    # screen -r ENUM_FINDOMAIN
+    screen -S $URL-ENUM_FINDOMAIN -p 0 -X stuff $'findomain -f '"$URL"' -q -u '"$DIRECTORY_FILENAME/ENUM_FINDOMAIN"'; exit \r'
+    # screen -r $URL-ENUM_FINDOMAIN
 
-    screen -S ENUM_AMASS -p 0 -X stuff $'amass enum -passive -df '"$URL"' -o '"$DIRECTORY_FILENAME/ENUM_AMASS"'; exit \r'
-    # screen -r ENUM_AMASS
+    screen -S $URL-ENUM_AMASS -p 0 -X stuff $'amass enum -passive -df '"$URL"' -o '"$DIRECTORY_FILENAME/ENUM_AMASS"'; exit \r'
+    # screen -r $URL-ENUM_AMASS
 
-    while [ $(screen -list | grep -ic ENUM) != 0 ]; do
-        echo -ne "      - Waiting For Subdomain Enumeration : Seconds $i : Session Running $(screen -list | grep -ic ENUM)" \\r
+    while [ $(screen -list | grep -ic $URL-ENUM) != 0 ]; do
+        echo -ne "      - Waiting For Subdomain Enumeration : Seconds $i : Session Running $(screen -list | grep -ic $URL-ENUM)" \\r
         let "i+=1"
         sleep 1
     done

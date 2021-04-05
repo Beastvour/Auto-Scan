@@ -6,12 +6,11 @@
 
 
 help(){
-
     echo 
-    echo "Usage of ENUM "
+    echo "Usage of CRAWL "
     echo
     echo "-" 
-    echo "Examples : 4CRWL.sh COMBINED_ENUM or COMBINED_HTTP "
+    echo "Examples : 4CRWL.sh COMBINED_ENUM or COMBINED_HTTP / NAMEOFSITE"
     echo "File Will Be Saved : COMBINED_CRWL"
 }
 
@@ -21,6 +20,7 @@ if [ ! -f "$1" ]; then help ; echo ; echo "File Not Found !" ;  exit 2 ; fi
 
 
 URLS=$1  
+NAME=$2
 
 main(){
 	echo "-----------------------------------------------------"
@@ -30,22 +30,22 @@ main(){
     echo  
     echo
 
-    screen -AmdS CRAWLING_HAKRAWLER bash
-    screen -AmdS CRAWLING_WAYBACKURLS bash
-    screen -AmdS CRAWLING_GAU bash
+    screen -AmdS $NAME-CRAWLING_HAKRAWLER bash
+    screen -AmdS $NAME-CRAWLING_WAYBACKURLS bash
+    screen -AmdS $NAME-CRAWLING_GAU bash
     sleep 1
 
-    screen -S CRAWLING_HAKRAWLER -p 0 -X stuff $'cat '"$URLS"' | hakrawler -plain -usewayback >> CRAWLING_HAKRAWLER ; exit \r'
+    screen -S $NAME-CRAWLING_HAKRAWLER -p 0 -X stuff $'cat '"$URLS"' | hakrawler -plain -usewayback >> CRAWLING_HAKRAWLER ; exit \r'
     # screen -r CRAWLING_HAKRAWLER
 
-    screen -S CRAWLING_WAYBACKURLS -p 0 -X stuff $'cat '"$URLS"' | waybackurls >> CRAWLING_WAYBACKURLS ; exit \r'
+    screen -S $NAME-CRAWLING_WAYBACKURLS -p 0 -X stuff $'cat '"$URLS"' | waybackurls >> CRAWLING_WAYBACKURLS ; exit \r'
     #screen -r CRAWLING_WAYBACKURLS
 
-    screen -S CRAWLING_GAU -p 0 -X stuff $'cat '"$URLS"' | gau -subs -random-agent >> CRAWLING_GAU ; exit \r'
+    screen -S $NAME-CRAWLING_GAU -p 0 -X stuff $'cat '"$URLS"' | gau -subs -random-agent >> CRAWLING_GAU ; exit \r'
     # screen -r CRAWLING_GAU
 
-    while [ $(screen -list | grep -ic CRAWLING) != 0 ]; do
-        echo -ne "      - Waiting For Crawling : Seconds $i : Session Running $(screen -list | grep -ic CRAWLING)" \\r
+    while [ $(screen -list | grep -ic $NAME-CRAWLING) != 0 ]; do
+        echo -ne "      - Waiting For Crawling : Seconds $i : Session Running $(screen -list | grep -ic $NAME-CRAWLING)" \\r
         let "i+=1"
         sleep 1
     done

@@ -5,19 +5,18 @@
 #
 
 help(){
-
     echo 
-    echo "Usage of ENUM "
+    echo "Usage of NUCL "
     echo
     echo "-" 
-    echo "Examples : 7NUCL.sh WORDPRESS"
-    echo 
-    #echo "File Will Be Saved : COMBINED_CRAWLING"
+    echo "Examples : 7NUCL.sh COMBINED_HTTP"
+    echo "It will save to folder nuclei/*" 
+    echo
 }
 
 if [ "$1" == "-h" ]; then help ; exit 0 ; fi
 if [ ! -f "$1" ]; then help ; echo ; echo "File Not Found !" ;  exit 2 ; fi 
-
+if [ ! -d "nuclei" ]; then mkdir -p nuclei ; fi
 
 URLS=$1  
 
@@ -25,18 +24,24 @@ main(){
 	echo "-----------------------------------------------------"
     echo
     echo "[+] STARTING WORDPRESS EXPLOIT"
-    echo "[-] wpscan"
+    echo "[-] nuclei "
     echo ""
     echo
  
-    screen -AmdS EXPLOIT_WORDSPRESS bash
-    screen -S EXPLOIT_WORDSPRESS -p 0 -X stuff $'cat '"$URLS"' | xargs -I@ wpscan --url @ --enumerate vp --api-token '"$wpscan_api_token"' >> WORDSPRESS_REPORT'
-    screen -r EXPLOIT_WORDSPRESS
+    nuclei -l $URLS -t /home/kali/nuclei-templates/cves/ -silent -c 50 -o nuclei/cves
+    nuclei -l $URLS -t /home/kali/nuclei-templates/vulnerabilities/ -silent -c 50 -o nuclei/vulnerabilities
+    nuclei -l $URLS -t /home/kali/nuclei-templates/misconfiguration/ -silent -c 50 -o nuclei/misconfiguration
+    nuclei -l $URLS -t /home/kali/nuclei-templates/exposed-tokens/ -silent -c 50 -o nuclei/exposed-tokens
+    nuclei -l $URLS -t /home/kali/nuclei-templates/exposed-panels/ -silent -c 50 -o nuclei/exposed-panels
+    nuclei -l $URLS -t /home/kali/nuclei-templates/fuzzing/ -silent -c 50 -o nuclei/fuzzing
+    nuclei -l $URLS -t /home/kali/nuclei-templates/default-logins/ -silent -c 50 -o nuclei/default-logins
+    nuclei -l $URLS -t /home/kali/nuclei-templates/technologies/ -silent -c 50 -o nuclei/technologies
+    nuclei -l $URLS -t /home/kali/nuclei-templates/takeovers/ -silent -c 50 -o nuclei/takeovers
 
     echo
     echo
     echo
-    echo "[+] WPSCAN DONE"
+    echo "[+] nuclei DONE"
     echo
     echo "-----------------------------------------------------"
 

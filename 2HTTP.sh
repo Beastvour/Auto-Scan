@@ -8,7 +8,7 @@
 help(){
 
     echo 
-    echo "Usage of ENUM "
+    echo "Usage of HTTP "
     echo
     echo "-" 
     echo "Examples : 2HTTP.sh COMBINED_ENUM "
