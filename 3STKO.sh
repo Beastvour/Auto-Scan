@@ -20,23 +20,22 @@ if [ ! -d "STKO"     ]; then mkdir -p STKO ;     fi
 
 
 URLS=$1 
-pyasubdover="python3 /home/kali/files/github/subdover/subdover.py"
-CHROME="/home/kali/files/github/chromium-latest-linux/864970/chrome-linux/chrome"
-NTHIM="/home/kali/files/github/NtHiM/target/debug/NtHiM"
+#pyasubdover="python3 /home/kali/files/github/subdover/subdover.py"
+#CHROME="/home/kali/files/github/chromium-latest-linux/864970/chrome-linux/chrome"
+#NTHIM="/home/kali/files/github/NtHiM/target/debug/NtHiM"
 main(){
 	echo "-----------------------------------------------------"
     echo
     echo "[+] STARTING SUBDOMAIN TAKEOVER"
-    echo "[-] subzy [-] subdover [-] subjack [-] aquatone"
+    echo "[-] subzy "    
     echo  
     echo
 
     subzy -targets $URLS -timeout 30 | tee STKO/STKO_subzy
     #subjack -v -w $URLS -t 30 -t 20 -o STKO/STKO_subjack
     #$pyasubdover -l $URLS -t 20 -o STKO/STKO_subdover
-    cat $URLS | aquatone -http-timeout 20000 -scan-timeout 20000 -ports xlarge -chrome-path $CHROME -out STKO/STKO_aquatone
-    $NTHIM -f $URLS --threads 50 >> STKO/STKO_NtHiM
-
+    #cat $URLS | aquatone -http-timeout 20000 -scan-timeout 20000 -ports xlarge -chrome-path $varchrome -out STKO/STKO_aquatone
+    #$NTHIM -f $URLS --threads 50 >> STKO/STKO_NtHiM
 
     echo
     echo

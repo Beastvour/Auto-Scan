@@ -23,7 +23,7 @@ URLS=$1
 main(){
 	echo "-----------------------------------------------------"
     echo
-    echo "[+] STARTING WORDPRESS EXPLOIT"
+    echo "[+] STARTING NUCLEI"
     echo "[-] nuclei "
     echo ""
     echo

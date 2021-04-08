@@ -20,35 +20,40 @@ if [ ! -f "$1" ]; then help ; echo ; echo "File Not Found !" ;  exit 2 ; fi
 
 
 URLS=$1  
-NAME=$2
+#NAME=$2
 
 main(){
 	echo "-----------------------------------------------------"
     echo
     echo "[+] STARTING CRAWLING"
-    echo "[-] hakrawler [-] waybackurls [-] gau"
+    echo "[-] waybackurls [-] gau"
     echo  
     echo
 
-    screen -AmdS $NAME-CRAWLING_HAKRAWLER bash
-    screen -AmdS $NAME-CRAWLING_WAYBACKURLS bash
-    screen -AmdS $NAME-CRAWLING_GAU bash
+    #screen -AmdS $NAME-CRAWLING_HAKRAWLER bash
+    #screen -AmdS $NAME-CRAWLING_WAYBACKURLS bash
+    #screen -AmdS $NAME-CRAWLING_GAU bash
     sleep 1
-
-    screen -S $NAME-CRAWLING_HAKRAWLER -p 0 -X stuff $'cat '"$URLS"' | hakrawler -plain -usewayback >> CRAWLING_HAKRAWLER ; exit \r'
+    cat $URLS | waybackurls | tee CRAWLING_WAYBACKURLS
+    #screen -S $NAME-CRAWLING_HAKRAWLER -p 0 -X stuff $'cat '"$URLS"' | hakrawler -plain -usewayback >> CRAWLING_HAKRAWLER ; exit \r'
     # screen -r CRAWLING_HAKRAWLER
 
-    screen -S $NAME-CRAWLING_WAYBACKURLS -p 0 -X stuff $'cat '"$URLS"' | waybackurls >> CRAWLING_WAYBACKURLS ; exit \r'
+    echo 
+    echo 
+    echo "GAU"
+    sleep 3
+    cat $URLS | sed 's~http[s]*://~~g' | sed 's/\/.*//' | awk -F"." '{print $(NF-1)"."$NF}' | sort -u | gau | tee CRAWLING_GAU
+    #screen -S $NAME-CRAWLING_WAYBACKURLS -p 0 -X stuff $'cat '"$URLS"' | waybackurls >> CRAWLING_WAYBACKURLS ; exit \r'
     #screen -r CRAWLING_WAYBACKURLS
 
-    screen -S $NAME-CRAWLING_GAU -p 0 -X stuff $'cat '"$URLS"' | gau -subs -random-agent >> CRAWLING_GAU ; exit \r'
+    #screen -S $NAME-CRAWLING_GAU -p 0 -X stuff $'cat '"$URLS"' | gau -subs -random-agent >> CRAWLING_GAU ; exit \r'
     # screen -r CRAWLING_GAU
 
-    while [ $(screen -list | grep -ic $NAME-CRAWLING) != 0 ]; do
-        echo -ne "      - Waiting For Crawling : Seconds $i : Session Running $(screen -list | grep -ic $NAME-CRAWLING)" \\r
-        let "i+=1"
-        sleep 1
-    done
+    #while [ $(screen -list | grep -ic $NAME-CRAWLING) != 0 ]; do
+    #    echo -ne "      - Waiting For Crawling : Seconds $i : Session Running $(screen -list | grep -ic $NAME-CRAWLING)" \\r
+    #    let "i+=1"
+    #    sleep 1
+    #done
 
     echo
     echo

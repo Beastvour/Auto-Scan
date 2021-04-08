@@ -26,8 +26,9 @@ main(){
     echo "[-] nmap "
     echo ""
     echo
- 
-    nmap -sV --script=vulscan,vulners,"(*cve*)" -Pn -iL $URLS >> NMAP_REPORTS
+    
+    sed 's/https\?:\/\///' $URLS | sort -u | tee REMOVE_HTTP''
+    nmap -sV --script=vulscan.nse,vulners.nse,"(*cve*)" -Pn -oN NMAP_READBLEFORMAT -iL $URLS >> NMAP_REPORTS
 
     echo
     echo
