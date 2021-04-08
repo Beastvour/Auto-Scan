@@ -7,17 +7,24 @@ To run the project, you will need to install the following programs:
 - [Amass](https://github.com/OWASP/Amass)
 - [Subfinder](https://github.com/projectdiscovery/subfinder)
 - [Assetfinder](https://github.com/tomnomnom/assetfinder)
-- [Gau](https://github.com/lc/gau)
-- [Python3](https://www.python.org/)
-- [Wpscan](https://github.com/wpscanteam/wpscan)
-- [Hakrawler](https://github.com/hakluke/hakrawler)
 - [Subzy](https://github.com/LukaSikic/subzy)
-- [Subjack](https://github.com/haccer/subjack)
-- [Subdover](https://github.com/PushpenderIndia/subdover)
-- [Aquatone](https://github.com/michenriksen/aquatone)
-- [httprobe](https://github.com/tomnomnom/httprobe)
-- [httpx](https://github.com/projectdiscovery/httpx)
+- [Waybackurls](https://github.com/tomnomnom/waybackurls)
+- [Gau](https://github.com/lc/gau)
+- [Kxss](https://github.com/Emoe/kxss)
+- [Dalfox](https://github.com/hahwul/dalfox)
+- [Nuclei](https://github.com/projectdiscovery/nuclei)
+- [Nmap](https://github.com/nmap/nmap)
+- [Wpscan](https://github.com/wpscanteam/wpscan)
+- [Httprobe](https://github.com/tomnomnom/httprobe)
+- [Httpx](https://github.com/projectdiscovery/httpx) 
+- [Python](https://www.python.org)
+- [DSSS](https://github.com/stamparm/DSSS)
 
+## 9SQLI.sh
+### Change the PATH of your dsss.py where it's located 
+
+bash $ vim 9SQLI.sh
+```21 DNSPY="python3 /home/kali/files/github/DSSS/dsss.py"```
 
 ## Donations
 ### My hope this little project helps you . 
