@@ -23,8 +23,9 @@ To run the project, you will need to install the following programs:
 ## 9SQLI.sh
 ### Change the PATH of your dsss.py where it's located 
 
-bash $ vim 9SQLI.sh
-```21 DNSPY="python3 /home/kali/files/github/DSSS/dsss.py"```
+    $ vim 9SQLI.sh
+    
+    21 DNSPY="python3 /home/kali/files/github/DSSS/dsss.py
 
 ## Donations
 ### My hope this little project helps you . 
